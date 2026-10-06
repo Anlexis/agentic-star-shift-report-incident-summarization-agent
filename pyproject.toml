@@ -1,0 +1,52 @@
+[project]
+name = "mfg-c2-004"
+version = "0.1.0"
+description = "Manufacturing Shift Report & Incident Summarization Agent — AgentCore Template"
+requires-python = ">=3.11"
+# The framework (agenticstar-agentcore) is NOT a public-PyPI dependency; it is
+# installed from the package registry by the run-tests job. Pinning it here
+# would make `pip install -e .` fail because it is not resolvable from the
+# default index.
+# pyyaml is a real runtime dependency: the boundary tests import it to read
+# config/config.yaml when checking hitl.enabled.
+dependencies = [
+    "agenticstar-agentcore[marketplace,openai]==1.0.3",
+    "pyyaml==6.0.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==8.1.1",
+    "pytest-cov==5.0.0",
+    "pytest-asyncio==0.23.6",
+    "ruff==0.4.4",
+    "mypy==1.10.0",
+    "types-PyYAML==6.0.12.20240311",
+]
+
+[build-system]
+requires = ["setuptools==68.0.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+# The framework ships untyped: its classes resolve to Any, so subclassing
+# them trips disallow_subclassing_any under strict. Relax exactly that flag
+# and skip type-following into the framework/shared packages.
+disallow_subclassing_any = false
+
+[[tool.mypy.overrides]]
+module = ["framework.*", "shared.*", "jinja2"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# AgentState comes from the untyped wheel, so it resolves to Any and every
+# field of a class deriving from it fails valid-type. The cause is the single
+# unresolved base, not the individual fields.
+module = ["src.schemas.state"]
+disable_error_code = ["valid-type"]

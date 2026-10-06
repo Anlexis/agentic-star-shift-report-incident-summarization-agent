@@ -1,0 +1,23 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+.venv/
+.env
+*.egg
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+htmlcov/
+.coverage
+
+# Centrally distributed reference files — present locally, never tracked here.
+CLAUDE.md
+security_rules/
+ci_stubs/
+MANIFEST.md
+
+# Publication preparation tool — run from a working copy, never committed.
+prepare-for-publication.sh

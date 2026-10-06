@@ -1,0 +1,40 @@
+# Runtime parameters — loaded by AgentRegistry, passed as Graph(config=...).
+# Separate from config/agent.yaml (the static manifest).
+
+max_retry: 3
+timeout_s: 60
+
+# carried from the legacy manifest root by migrate_manifest.py
+llm:
+  model: "gpt-4o"
+  temperature: 0.2
+  max_tokens: 2048
+
+# carried from the legacy manifest root by migrate_manifest.py
+mfg_c2_004:
+  # System prompt forwarded to SummarizationNode via InvocationContext / config.
+  system_prompt: |
+    You are a manufacturing shift report assistant. Summarize the following
+    shift log data, highlighting anomalies, stoppages, and action items.
+    Use structured output with sections: Summary, Anomalies, Production Metrics,
+    Action Items.
+
+  # Path to the Jinja2 shift report template consumed by ShiftReportRenderNode.
+  # Relative to the project root. Falls back to a built-in template if missing.
+  report_template_path: "config/shift_report_template.md"
+
+  # Expected shift duration in hours (used to compute percentage-based metrics).
+  shift_duration_hours: 8
+
+  # OEE and production metrics to compute from normalized_records.
+  metrics_to_compute:
+    - oee
+    - availability
+    - performance_rate
+    - quality_rate
+
+  # Events exceeding this fraction of total shift time are flagged as anomaly highlights.
+  anomaly_highlight_threshold: 0.15
+
+  # Maximum log records accepted per shift (malformed or excess records are rejected).
+  max_log_records_per_shift: 5000
